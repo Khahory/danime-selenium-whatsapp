@@ -18,10 +18,11 @@ headers={'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTM
 # buscamos la victima
 personajes = [
     64851,
-    210,
-    # 859430
+    210
 ]
 personaje = random.choice(personajes)
+personaje = random.randint(1, 64851)
+
 url = "https://anilist.co/character/{0}/".format(personaje)
 
 # entramos en la web
@@ -30,16 +31,16 @@ driver.get(url)
 assert "AniList" in driver.title
 
 # dormimos un poco para que cargue la web
-# driver.implicitly_wait(1)
+driver.implicitly_wait(1)
 
 try:
     # buscamos la imagen
     img = driver.find_element(By.CLASS_NAME, "image")
     nombre_personaje = driver.find_element(By.XPATH, "/html/body/div[2]/div[3]/div/div[1]/div[1]/div/div[2]/h1")
-    nombre_personaje = nombre_personaje.text
 
     # obtenemos la url de la imagen
     src = img.get_attribute("src")
+    img_filename = "{0}.jpg".format(nombre_personaje.text)
     print(src)
 
     # obtenemos el nombre del personaje
@@ -49,7 +50,7 @@ try:
     response = urllib.request.urlopen(request_)  # store the response
 
     # create a new file and write the image
-    f = open("{0}.jpg".format(nombre_personaje), 'wb')
+    f = open('personajes/'+img_filename, 'wb')
     f.write(response.read())
     f.close()
 
