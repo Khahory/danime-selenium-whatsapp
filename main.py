@@ -7,6 +7,7 @@ from selenium.webdriver.common.by import By
 import urllib.request
 
 # variables
+imagen_default = "character/large/default"
 is_404 = True
 driver = webdriver.Firefox()
 
@@ -20,8 +21,16 @@ headers = {
     'Connection': 'keep-alive'}
 
 while is_404:
+    lista = [
+        12842,
+        12842,
+        12842,
+        2
+    ]
+
     # buscamos la victima
     personaje = random.randint(1, 64851)
+    personaje = random.choice(lista)
 
     # entramos en la web
     url = "https://anilist.co/character/{0}/".format(personaje)
@@ -40,8 +49,9 @@ while is_404:
         src = img.get_attribute("src")
 
         # validamos que no tenga imagen default
-        if src in "character/large/default":
-            pass
+        if imagen_default in src:
+            print("No tiene imagen, buscando otra...")
+            continue
 
         # obtenemos el nombre del personaje
         img_filename = "{0}.jpg".format(nombre_personaje.text)
