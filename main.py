@@ -44,14 +44,14 @@ def buscar_personaje():
         driver.implicitly_wait(implicitly_wait)
 
         try:
+            # comprobamos si es NSFW
+            if validar_personaje_nsfw(driver, url):
+                print("Es NSFW ¯\_(ツ)_/¯ busquemos otro...")
+                continue
+
             # buscamos la imagen
             img = driver.find_element(By.CLASS_NAME, "image")
             nombre_personaje = driver.find_element(By.XPATH, "/html/body/div[2]/div[3]/div/div[1]/div[1]/div/div[2]/h1")
-
-            # comprobamos si es NSFW
-            if validar_personaje_nsfw(driver, personaje_code):
-                print("Es NSFW ¯\_(ツ)_/¯ busquemos otro...")
-                continue
 
             # obtenemos la url de la imagen
             src = img.get_attribute("src")
@@ -95,8 +95,11 @@ def validar_personaje_nsfw(driver_web, url):
 
     print('Verificando si ya estamos logueados...')
     cookies = driver.get_cookies()
-    cookies = ''.join(cookies)
-    if os.getenv('VALUE') not in cookies:
+    try:
+        if cookies[1]:
+            print('Ya estan las cookies agregadas!')
+
+    except IndexError:
         print('Agregando cookies...')
         driver.add_cookie({
             'name': os.getenv('NAME'),
