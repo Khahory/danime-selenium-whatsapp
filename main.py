@@ -1,75 +1,118 @@
+import json
+import os
 import random
 import sys
+import time
 
 from selenium import webdriver
 from selenium.common import NoSuchElementException
 from selenium.webdriver.common.by import By
 import urllib.request
+from dotenv import load_dotenv
 
-# variables
-imagen_default = "character/large/default"
-is_404 = True
-driver = webdriver.Firefox()
 
-# headers
-headers = {
-    'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11',
-    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-    'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.3',
-    'Accept-Encoding': 'none',
-    'Accept-Language': 'en-US,en;q=0.8',
-    'Connection': 'keep-alive'}
+def buscar_personaje():
+    # variables
+    imagen_default = "character/large/default"
+    is_404 = True
+    driver = webdriver.Firefox()
 
-while is_404:
-    lista = [
-        12842,
-        12842,
-        12842,
-        2
-    ]
+    # headers
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.3',
+        'Accept-Encoding': 'none',
+        'Accept-Language': 'en-US,en;q=0.8',
+        'Connection': 'keep-alive'}
 
-    # buscamos la victima
-    personaje = random.randint(1, 64851)
-    personaje = random.choice(lista)
+    while is_404:
+        # buscamos la victima
+        personaje_code = random.randint(1, 64851)
+
+        # entramos en la web
+        url = "https://anilist.co/character/{0}/".format(personaje_code)
+        driver.get(url)
+        assert "AniList" in driver.title
+
+        # dormimos un poco para que cargue la web
+        driver.implicitly_wait(1)
+
+        try:
+            # buscamos la imagen
+            img = driver.find_element(By.CLASS_NAME, "image")
+            nombre_personaje = driver.find_element(By.XPATH, "/html/body/div[2]/div[3]/div/div[1]/div[1]/div/div[2]/h1")
+
+            # obtenemos la url de la imagen
+            src = img.get_attribute("src")
+
+            # validamos que no tenga imagen default
+            if imagen_default in src:
+                print("No tiene imagen, buscando otra...")
+                continue
+
+            # obtenemos el nombre del personaje
+            img_filename = "{0}.jpg".format(nombre_personaje.text)
+            print(src)
+
+            # descargamos la imagen
+            request_ = urllib.request.Request(src, None, headers)  # The assembled request
+            response = urllib.request.urlopen(request_)  # store the response
+
+            # create a new file and write the image
+            f = open('personajes/' + img_filename, 'wb')
+            f.write(response.read())
+            f.close()
+
+            is_404 = False
+
+        except NoSuchElementException:
+            print("No se ha encontrado la imagen")
+            bandera_personaje = True
+
+    driver.close()
+
+
+def personaje_nsfw(driver_web, personaje_code):
+    # variables
+    load_dotenv('.env')
+    imagen_default = "character/large/default"
+    is_404 = True
+    driver = webdriver.Firefox()
 
     # entramos en la web
-    url = "https://anilist.co/character/{0}/".format(personaje)
+    url = "https://anilist.co/character/{0}/".format(personaje_code)
     driver.get(url)
-    assert "AniList" in driver.title
-
-    # dormimos un poco para que cargue la web
     driver.implicitly_wait(1)
 
-    try:
-        # buscamos la imagen
-        img = driver.find_element(By.CLASS_NAME, "image")
-        nombre_personaje = driver.find_element(By.XPATH, "/html/body/div[2]/div[3]/div/div[1]/div[1]/div/div[2]/h1")
+    # buscamos las cookies
+    # time.sleep(30)
+    # print(driver.get_cookies())
 
-        # obtenemos la url de la imagen
-        src = img.get_attribute("src")
+    driver.add_cookie({
+        'name': os.getenv('NAME'),
+        'value': os.getenv('VALUE'),
+        'path': os.getenv('COOKIE_PATH'),
+        'domain': os.getenv('DOMAIN'),
+        'secure': bool(os.getenv('SECURE')),
+        'httpOnly': bool(os.getenv('HTTPONLY')),
+        'expiry': int(os.getenv('EXPIRY')),
+        'sameSite': os.getenv('SAMESITE')
+    })
+    driver.refresh()
 
-        # validamos que no tenga imagen default
-        if imagen_default in src:
-            print("No tiene imagen, buscando otra...")
-            continue
+    driver.find_element(By.XPATH, "/html/body/div[2]/div[3]/div/div[4]/div/div[1]/div/div[1]/a").click()
 
-        # obtenemos el nombre del personaje
-        img_filename = "{0}.jpg".format(nombre_personaje.text)
-        print(src)
+    # is_adult = driver.find_element(By.CLASS_NAME, "adult-label").text
+    # if is_adult == "Adult":
+    #     print("Es adulto ¯\_(ツ)_/¯")
+    #     return True
+    return False
 
-        # descargamos la imagen
-        request_ = urllib.request.Request(src, None, headers)  # The assembled request
-        response = urllib.request.urlopen(request_)  # store the response
 
-        # create a new file and write the image
-        f = open('personajes/' + img_filename, 'wb')
-        f.write(response.read())
-        f.close()
-
-        is_404 = False
-
-    except NoSuchElementException:
-        print("No se ha encontrado la imagen")
-        bandera_personaje = True
-
-driver.close()
+if __name__ == "__main__":
+    print("Buscando personajes...")
+    # buscar_personaje()
+    is_adult = personaje_nsfw(None, 21340)
+    # print(is_adult)
+    # buscar_personaje()

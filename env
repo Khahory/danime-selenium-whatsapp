@@ -1,0 +1,8 @@
+NAME=           <tu_coockie_data>
+VALUE=          <tu_coockie_data>
+COOKIE_PATH=    <tu_coockie_data>
+DOMAIN=         <tu_coockie_data>
+SECURE=         <tu_coockie_data>
+HTTPONLY=       <tu_coockie_data>
+EXPIRY=         <tu_coockie_data>
+SAMESITE=       <tu_coockie_data>
