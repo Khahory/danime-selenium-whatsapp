@@ -11,7 +11,7 @@ import urllib.request
 from dotenv import load_dotenv
 
 load_dotenv('.env')
-implicitly_wait = 1
+tiempo_espera_pagina = 1
 
 
 def buscar_personaje():
@@ -32,8 +32,6 @@ def buscar_personaje():
     while is_404:
         # buscamos la victima
         personaje_code = random.randint(1, 64851)
-        personaje_code = [15965, 1, 15966, 83739]
-        personaje_code = random.choice(personaje_code)
 
         # entramos en la web
         url = "https://anilist.co/character/{0}/".format(personaje_code)
@@ -41,7 +39,7 @@ def buscar_personaje():
         assert "AniList" in driver.title
 
         # dormimos un poco para que cargue la web
-        driver.implicitly_wait(implicitly_wait)
+        driver.implicitly_wait(tiempo_espera_pagina)
 
         try:
             # comprobamos si es NSFW
@@ -49,6 +47,7 @@ def buscar_personaje():
                 print("Es NSFW ¯\_(ツ)_/¯ busquemos otro...")
                 continue
 
+            # si navegamos a otra pagina perdemos lo que teniamos en la variable driver.find_element
             # buscamos la imagen
             img = driver.find_element(By.CLASS_NAME, "image")
             nombre_personaje = driver.find_element(By.XPATH, "/html/body/div[2]/div[3]/div/div[1]/div[1]/div/div[2]/h1")
@@ -97,7 +96,7 @@ def validar_personaje_nsfw(driver_web, url):
     cookies = driver.get_cookies()
     try:
         if cookies[1]:
-            print('Ya estan las cookies agregadas!')
+            print('OK!')
 
     except IndexError:
         print('Agregando cookies...')
@@ -112,7 +111,7 @@ def validar_personaje_nsfw(driver_web, url):
             'sameSite': os.getenv('SAMESITE')
         })
         driver.refresh()
-        driver.implicitly_wait(implicitly_wait)
+        driver.implicitly_wait(tiempo_espera_pagina)
 
     try:
         driver.find_element(By.XPATH, "/html/body/div[2]/div[3]/div/div[4]/div/div[1]/div/div[1]/a").click()
@@ -123,7 +122,7 @@ def validar_personaje_nsfw(driver_web, url):
     except NoSuchElementException:
         # entramos en la web
         driver.get(url)
-        driver.implicitly_wait(implicitly_wait)
+        driver.implicitly_wait(tiempo_espera_pagina)
         return False
 
 
