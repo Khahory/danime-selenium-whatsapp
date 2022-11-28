@@ -10,6 +10,9 @@ from selenium.webdriver.common.by import By
 import urllib.request
 from dotenv import load_dotenv
 
+load_dotenv('.env')
+implicitly_wait = 1
+
 
 def buscar_personaje():
     # variables
@@ -29,6 +32,8 @@ def buscar_personaje():
     while is_404:
         # buscamos la victima
         personaje_code = random.randint(1, 64851)
+        personaje_code = [15965, 1, 15966, 83739]
+        personaje_code = random.choice(personaje_code)
 
         # entramos en la web
         url = "https://anilist.co/character/{0}/".format(personaje_code)
@@ -36,12 +41,17 @@ def buscar_personaje():
         assert "AniList" in driver.title
 
         # dormimos un poco para que cargue la web
-        driver.implicitly_wait(1)
+        driver.implicitly_wait(implicitly_wait)
 
         try:
             # buscamos la imagen
             img = driver.find_element(By.CLASS_NAME, "image")
             nombre_personaje = driver.find_element(By.XPATH, "/html/body/div[2]/div[3]/div/div[1]/div[1]/div/div[2]/h1")
+
+            # comprobamos si es NSFW
+            if validar_personaje_nsfw(driver, personaje_code):
+                print("Es NSFW ¯\_(ツ)_/¯ busquemos otro...")
+                continue
 
             # obtenemos la url de la imagen
             src = img.get_attribute("src")
@@ -73,46 +83,47 @@ def buscar_personaje():
     driver.close()
 
 
-def personaje_nsfw(driver_web, personaje_code):
+def validar_personaje_nsfw(driver_web, url):
+    print("Personaje NSFW ? o_O")
+
     # variables
-    load_dotenv('.env')
-    imagen_default = "character/large/default"
-    is_404 = True
-    driver = webdriver.Firefox()
+    driver = driver_web
 
-    # entramos en la web
-    url = "https://anilist.co/character/{0}/".format(personaje_code)
-    driver.get(url)
-    driver.implicitly_wait(1)
-
-    # buscamos las cookies
+    # nos logueamos y buscamos nuestras cookies
     # time.sleep(30)
     # print(driver.get_cookies())
 
-    driver.add_cookie({
-        'name': os.getenv('NAME'),
-        'value': os.getenv('VALUE'),
-        'path': os.getenv('COOKIE_PATH'),
-        'domain': os.getenv('DOMAIN'),
-        'secure': bool(os.getenv('SECURE')),
-        'httpOnly': bool(os.getenv('HTTPONLY')),
-        'expiry': int(os.getenv('EXPIRY')),
-        'sameSite': os.getenv('SAMESITE')
-    })
-    driver.refresh()
+    print('Verificando si ya estamos logueados...')
+    cookies = driver.get_cookies()
+    cookies = ''.join(cookies)
+    if os.getenv('VALUE') not in cookies:
+        print('Agregando cookies...')
+        driver.add_cookie({
+            'name': os.getenv('NAME'),
+            'value': os.getenv('VALUE'),
+            'path': os.getenv('COOKIE_PATH'),
+            'domain': os.getenv('DOMAIN'),
+            'secure': bool(os.getenv('SECURE')),
+            'httpOnly': bool(os.getenv('HTTPONLY')),
+            'expiry': int(os.getenv('EXPIRY')),
+            'sameSite': os.getenv('SAMESITE')
+        })
+        driver.refresh()
+        driver.implicitly_wait(implicitly_wait)
 
-    driver.find_element(By.XPATH, "/html/body/div[2]/div[3]/div/div[4]/div/div[1]/div/div[1]/a").click()
+    try:
+        driver.find_element(By.XPATH, "/html/body/div[2]/div[3]/div/div[4]/div/div[1]/div/div[1]/a").click()
+        is_NSFW = driver.find_element(By.CLASS_NAME, "adult-label").text
+        if is_NSFW == "ADULT":
+            return True
 
-    # is_adult = driver.find_element(By.CLASS_NAME, "adult-label").text
-    # if is_adult == "Adult":
-    #     print("Es adulto ¯\_(ツ)_/¯")
-    #     return True
-    return False
+    except NoSuchElementException:
+        # entramos en la web
+        driver.get(url)
+        driver.implicitly_wait(implicitly_wait)
+        return False
 
 
 if __name__ == "__main__":
     print("Buscando personajes...")
-    # buscar_personaje()
-    is_adult = personaje_nsfw(None, 21340)
-    # print(is_adult)
-    # buscar_personaje()
+    buscar_personaje()
