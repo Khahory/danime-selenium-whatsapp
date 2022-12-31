@@ -1,4 +1,2 @@
-set proyecto = "C:\Users\kha\PycharmProjects\get-img-anime"
-
-cd %proyecto%
+cd C:\Users\kha\PycharmProjects\get-img-anime
 venv\Scripts\python.exe main.py
