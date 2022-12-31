@@ -2,6 +2,7 @@ import os
 import random
 import urllib.request
 import configparser
+from PIL import Image
 
 from dotenv import load_dotenv
 from selenium import webdriver
@@ -15,6 +16,7 @@ config = configparser.ConfigParser()
 config.sections()
 config.read('config.ini')
 tiempo_espera_pagina = config['DEFAULT']['tiempo_espera_pagina']
+img_filename = None
 
 def buscar_personaje():
     # variables
@@ -49,6 +51,9 @@ def buscar_personaje():
         login_to_page(driver)
 
         try:
+            # global
+            global img_filename
+
             # comprobamos si es NSFW
             if validar_personaje_nsfw(driver, url):
                 print("Es NSFW ¯\_(ツ)_/¯ busquemos otro...")
@@ -80,12 +85,37 @@ def buscar_personaje():
             f.write(response.read())
             f.close()
 
+            # validamos las dimensiones de la imagen
+            if not validar_dimensiones_img(img_filename):
+                continue
+
             is_404 = False
 
         except NoSuchElementException:
             print("No se ha encontrado la imagen")
 
     driver.close()
+
+def validar_dimensiones_img(img):
+    # get image
+    filepath = "personajes/" + img
+    img = Image.open(filepath)
+
+    # get width and height
+    width = img.width
+    height = img.height
+
+    # display width and height
+    print("The height of the image is: ", height)
+    print("The width of the image is: ", width)
+    img.close()
+
+    if width < 192 or height < 192:
+        print("La imagen es muy pequeña, la eliminamos")
+        os.remove(filepath)
+        return False
+
+    return True
 
 
 def validar_personaje_nsfw(driver_web, url):
@@ -134,6 +164,7 @@ def login_to_page(driver):
 
 def main():
     buscar_personaje()
+    return img_filename
 
 if __name__ == "__main__":
     main()
