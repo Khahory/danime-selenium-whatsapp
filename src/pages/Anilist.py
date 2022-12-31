@@ -1,6 +1,7 @@
 import os
 import random
 import urllib.request
+import configparser
 
 from dotenv import load_dotenv
 from selenium import webdriver
@@ -8,8 +9,12 @@ from selenium.common import NoSuchElementException
 from selenium.webdriver.common.by import By
 
 load_dotenv('.env')
-tiempo_espera_pagina = 1
 
+# leyendo configuracion
+config = configparser.ConfigParser()
+config.sections()
+config.read('config.ini')
+tiempo_espera_pagina = config['DEFAULT']['tiempo_espera_pagina']
 
 def buscar_personaje():
     # variables
