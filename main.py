@@ -31,7 +31,7 @@ def buscar_personaje():
 
     while is_404:
         # buscamos la victima
-        personaje_code = random.randint(1, 64851)
+        personaje_code = random.randint(1, 128038)
 
         # entramos en la web
         url = "https://anilist.co/character/{0}/".format(personaje_code)
