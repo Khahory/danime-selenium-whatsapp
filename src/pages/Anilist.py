@@ -16,7 +16,7 @@ config = configparser.ConfigParser()
 config.sections()
 config.read('config.ini')
 tiempo_espera_pagina = config['DEFAULT']['tiempo_espera_pagina']
-img_filename = None
+img_filename = ''
 
 def buscar_personaje():
     # variables
@@ -36,6 +36,7 @@ def buscar_personaje():
     while is_404:
         # buscamos la victima
         personaje_code = random.randint(1, 128038)
+        personaje_code = 33688
 
         print("Buscando personaje con ID: " + str(personaje_code))
 
@@ -162,8 +163,27 @@ def login_to_page(driver):
         driver.refresh()
         driver.implicitly_wait(tiempo_espera_pagina)
 
+def recortando_imagen(foto):
+    print("Recortando imagen...")
+
+    # recortamos la imagen
+    img = Image.open("personajes/" + foto)
+    img = img.convert('RGB')
+    # get width and height
+    height = img.height
+    width = img.width
+
+    # si es mas gorda que alta, no hacemos nada
+    if width > height: return
+
+    img = img.crop((0, 0, img.width, img.width))
+    img.save("personajes/" + foto)
+    img.close()
+    print("Imagen recortada!")
+
 def main():
     buscar_personaje()
+    recortando_imagen(img_filename)
     return img_filename
 
 if __name__ == "__main__":
