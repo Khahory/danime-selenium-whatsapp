@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 from selenium import webdriver
 from selenium.common import NoSuchElementException
 from selenium.webdriver.common.by import By
+from selenium.webdriver.firefox.options import Options
 
 load_dotenv('.env')
 
@@ -16,13 +17,17 @@ config = configparser.ConfigParser()
 config.sections()
 config.read('config.ini')
 tiempo_espera_pagina = config['DEFAULT']['tiempo_espera_pagina']
+ruta_bin_firefox = config['DEFAULT']['ruta_bin_firefox']
 img_filename = ''
 
 def buscar_personaje():
+    options = Options()
+    options.binary_location = ruta_bin_firefox
+
     # variables
     imagen_default = "character/large/default"
     is_404 = True
-    driver = webdriver.Firefox()
+    driver = webdriver.Firefox(options=options)
 
     # headers
     headers = {

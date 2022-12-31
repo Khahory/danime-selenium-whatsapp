@@ -7,6 +7,7 @@ from selenium.common import NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
+from selenium.webdriver.firefox.options import Options
 
 # leyendo configuracion
 config = configparser.ConfigParser()
@@ -14,6 +15,7 @@ config.sections()
 config.read('config.ini')
 
 tiempo_espera_pagina = config['DEFAULT']['tiempo_espera_pagina']
+ruta_bin_firefox = config['DEFAULT']['ruta_bin_firefox']
 PERFIL_FIREFOX = webdriver.FirefoxProfile("perfiles/firefox")
 
 # mis variables
@@ -24,7 +26,10 @@ ELEMENTO_BOTON_ENVIAR_FOTO = '//span[@data-testid="checkmark-large"]'
 driver = None
 
 def open_page():
-    driver_local = webdriver.Firefox(firefox_profile=PERFIL_FIREFOX)
+    options = Options()
+    options.binary_location = ruta_bin_firefox
+
+    driver_local = webdriver.Firefox(firefox_profile=PERFIL_FIREFOX, options=options)
 
     # entramos en la web
     url = "https://web.whatsapp.com"
