@@ -58,7 +58,7 @@ def main(foto):
 
         # clicker boton de menos varias veces
         print("El zoom siempre lo quiero al maximo ♥‿♥")
-        for i in range(0, 8):
+        for i in range(0, 10):
             WebDriverWait(driver, 20).until(ec.element_to_be_clickable((By.XPATH, ELEMENTO_BOTON_MENOS))).click()
             time.sleep(0.2)
 
