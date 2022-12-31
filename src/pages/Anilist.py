@@ -35,8 +35,7 @@ def buscar_personaje():
 
     while is_404:
         # buscamos la victima
-        personaje_code = random.randint(1, 128038)
-        personaje_code = 33688
+        personaje_code = random.randint(1, 129063)
 
         print("Buscando personaje con ID: " + str(personaje_code))
 
