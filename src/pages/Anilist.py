@@ -35,20 +35,7 @@ def buscar_personaje():
 
     while is_404:
         # buscamos la victima
-        personaje_code = random.randint(1, 129063)
-
-        print("Buscando personaje con ID: " + str(personaje_code))
-
-        # entramos en la web
-        url = "https://anilist.co/character/{0}/".format(personaje_code)
-        driver.get(url)
-        assert "AniList" in driver.title
-
-        # dormimos un poco para que cargue la web
-        driver.implicitly_wait(tiempo_espera_pagina)
-
-        # nos logueamos
-        login_to_page(driver)
+        driver, url = open_page(driver)
 
         try:
             # global
@@ -117,6 +104,25 @@ def validar_dimensiones_img(img):
 
     return True
 
+def open_page(driver):
+
+    # buscamos la victima
+    personaje_code = random.randint(1, 129063)
+
+    print("Buscando personaje con ID: " + str(personaje_code))
+
+    # entramos en la web
+    url = "https://anilist.co/character/{0}/".format(personaje_code)
+    driver.get(url)
+    assert "AniList" in driver.title
+
+    # dormimos un poco para que cargue la web
+    driver.implicitly_wait(tiempo_espera_pagina)
+
+    # nos logueamos
+    login_to_page(driver)
+    return driver, url
+
 
 def validar_personaje_nsfw(driver_web, url):
     print("Personaje NSFW ? o_O")
@@ -182,7 +188,10 @@ def recortando_imagen(foto):
 
 def main():
     buscar_personaje()
-    recortando_imagen(img_filename)
+
+    # si queiren recortar la imagen, habilitan este metodo
+    # recortando_imagen(img_filename)
+
     return img_filename
 
 if __name__ == "__main__":
