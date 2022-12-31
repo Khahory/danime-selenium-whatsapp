@@ -14,7 +14,7 @@ config.sections()
 config.read('config.ini')
 
 tiempo_espera_pagina = config['DEFAULT']['tiempo_espera_pagina']
-PERFIL_FIREFOX = webdriver.FirefoxProfile("C:\\Users\\kha\\AppData\\Roaming\\Mozilla\\Firefox\\Profiles\\d9vnbu5c.Selenium")
+PERFIL_FIREFOX = webdriver.FirefoxProfile("perfiles/firefox")
 
 # mis variables
 ELEMENTO_FOTO = "/html/body/div[1]/div/div/div[3]/header/div[1]/div/img"
