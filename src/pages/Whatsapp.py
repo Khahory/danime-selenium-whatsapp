@@ -21,20 +21,22 @@ ELEMENTO_FOTO = "/html/body/div[1]/div/div/div[3]/header/div[1]/div/img"
 ELEMENTO_INPUT_FOTO = '//INPUT[@type="file"]'
 ELEMENTO_BOTON_MENOS = '//button[@data-testid="crop-tool-zoom-out"]'
 ELEMENTO_BOTON_ENVIAR_FOTO = '//span[@data-testid="checkmark-large"]'
+driver = None
 
 def open_page():
-    driver = webdriver.Firefox(firefox_profile=PERFIL_FIREFOX)
+    driver_local = webdriver.Firefox(firefox_profile=PERFIL_FIREFOX)
 
     # entramos en la web
     url = "https://web.whatsapp.com"
-    driver.get(url)
-    assert "WhatsApp" in driver.title
+    driver_local.get(url)
+    assert "WhatsApp" in driver_local.title
 
     # dormimos un poco para que cargue la web
-    driver.implicitly_wait(tiempo_espera_pagina)
-    return driver
+    driver_local.implicitly_wait(tiempo_espera_pagina)
+    return driver_local
 
 def main(foto):
+    global driver
     if not os.path.exists('personajes/'+foto):
         print('No existe el archivo')
         return
@@ -65,5 +67,8 @@ def main(foto):
         print("No se ha encontrado el elemento")
         return
 
-    driver.close()
+    finally:
+        driver.quit()
+        print("Se ha cerrado el navegador")
+
 
