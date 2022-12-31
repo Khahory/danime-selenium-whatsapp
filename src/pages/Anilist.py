@@ -3,6 +3,7 @@ import random
 import urllib.request
 import configparser
 from PIL import Image
+import time
 
 from dotenv import load_dotenv
 from selenium import webdriver
