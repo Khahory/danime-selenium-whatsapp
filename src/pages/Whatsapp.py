@@ -54,6 +54,7 @@ def main(foto):
         wait = WebDriverWait(driver, 20)
         wait.until(ec.visibility_of_element_located((By.XPATH, ELEMENTO_FOTO)))
         driver.find_element(By.XPATH, ELEMENTO_FOTO).click()
+        time.sleep(2)
 
         # subir file
         print("Vamos a poner la foto de perfil")
