@@ -19,7 +19,7 @@ ruta_bin_firefox = config['DEFAULT']['ruta_bin_firefox']
 PERFIL_FIREFOX = webdriver.FirefoxProfile("perfiles/firefox")
 
 # mis variables
-ELEMENTO_FOTO = "/html/body/div[1]/div/div/div[3]/header/div[1]/div/img"
+ELEMENTO_FOTO = "/html/body/div[1]/div/div/div[4]/header/div[1]/div/img"
 ELEMENTO_INPUT_FOTO = '//INPUT[@type="file"]'
 ELEMENTO_BOTON_MENOS = '//button[@data-testid="crop-tool-zoom-out"]'
 ELEMENTO_BOTON_ENVIAR_FOTO = '//span[@data-testid="checkmark-large"]'
