@@ -1,5 +1,5 @@
 .idea
 geckodriver.log
-personajes
+/personajes/*
+/perfiles/*
 .env
-perfiles

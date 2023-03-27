@@ -1,3 +1,9 @@
+RUN
+```shell
+pip install -r requirements.txt
+python main.py
+```
+
 DEBES INSTALAR 2 EXTENSIONES DE FIREFOX
 1. uBlock Origin
 2. I don't care about cookies
